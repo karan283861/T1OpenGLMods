@@ -1,0 +1,12 @@
+[submodule "plog"]
+	path = plog
+	url = git@github.com:SergiusTheBest/plog.git
+[submodule "imgui"]
+	path = imgui
+	url = git@github.com:ocornut/imgui.git
+[submodule "stb"]
+	path = stb
+	url = git@github.com:nothings/stb.git
+[submodule "Detours"]
+	path = Detours
+	url = git@github.com:microsoft/Detours.git
