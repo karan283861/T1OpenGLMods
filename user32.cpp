@@ -1,14 +1,14 @@
-#include "shared.hpp"
 #include "user32.hpp"
 #include "opengl.hpp"
 #include "imgui/imgui.h"
 #include "imgui/backends/imgui_impl_win32.h"
+#include <plog/Log.h>
 
 namespace user32
 {
 	HWND gameHWND{ nullptr };
-	DWORD mouseLLHookFunctionAddress{ 0 };
-	DWORD mouseLLHookOriginalByteCodeBuffer[3]{ 0 };
+	HOOKPROC mouseLLHookFunction{ 0 };
+	BYTE mouseLLHookOriginalByteCodeBuffer[3]{ 0 };
 	BYTE mouseLLHookModifiedByteCodeBuffer[3]{ 0xC2, 0x0C, 0x00 };
 
 	WNDPROC originalWNDPROCCallBack{ nullptr };
@@ -38,12 +38,12 @@ namespace user32
 				opengl::showImGuiMenu = !opengl::showImGuiMenu;
 				if (opengl::showImGuiMenu)
 				{
-					memcpy(reinterpret_cast<void*>(mouseLLHookFunctionAddress), &mouseLLHookModifiedByteCodeBuffer,
+					memcpy(mouseLLHookFunction, &mouseLLHookModifiedByteCodeBuffer,
 						   sizeof(mouseLLHookModifiedByteCodeBuffer));
 				}
 				else
 				{
-					memcpy(reinterpret_cast<void*>(mouseLLHookFunctionAddress), &mouseLLHookOriginalByteCodeBuffer,
+					memcpy(mouseLLHookFunction, &mouseLLHookOriginalByteCodeBuffer,
 						   sizeof(mouseLLHookModifiedByteCodeBuffer));
 				}
 			}
@@ -69,15 +69,15 @@ namespace user32
 	SetWindowsHookExW originalSetWindowsHookExW = { reinterpret_cast<SetWindowsHookExW>(0) };
 	HHOOK __stdcall SetWindowsHookExWHook(int idHook, HOOKPROC lpfn, HINSTANCE hmod, DWORD dwThreadId) {
 		PLOG_DEBUG << "SetWindowsHookExWHook called";
-		auto hookFunctionAddress = reinterpret_cast<DWORD>(lpfn);
+		auto hookFunction = lpfn;
 
 		static DWORD protection{ 0 };
 		
-		if (idHook == WH_MOUSE_LL && hookFunctionAddress != mouseLLHookFunctionAddress) {
+		if (idHook == WH_MOUSE_LL && hookFunction != mouseLLHookFunction) {
 			PLOG_INFO << "New WH_MOUSE_LL hook function found";
-			mouseLLHookFunctionAddress = hookFunctionAddress;
-			VirtualProtect((void*)mouseLLHookFunctionAddress, sizeof(float), PAGE_EXECUTE_READWRITE, &protection);
-			memcpy(&mouseLLHookOriginalByteCodeBuffer, reinterpret_cast<void*>(mouseLLHookFunctionAddress),
+			mouseLLHookFunction = hookFunction;
+			VirtualProtect(mouseLLHookFunction, sizeof(float), PAGE_EXECUTE_READWRITE, &protection);
+			memcpy(&mouseLLHookOriginalByteCodeBuffer, mouseLLHookFunction,
 				   sizeof(mouseLLHookOriginalByteCodeBuffer));
 		}
 

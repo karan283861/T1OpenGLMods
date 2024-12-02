@@ -1,4 +1,3 @@
-#include "shared.hpp"
 #include "opengl.hpp"
 
 namespace opengl

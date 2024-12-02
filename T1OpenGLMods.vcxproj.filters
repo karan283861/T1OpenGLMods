@@ -37,20 +37,17 @@
     <ClCompile Include="imgui\backends\imgui_impl_win32.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="shared.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="opengl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="user32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="customs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="shared.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="opengl.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
