@@ -29,7 +29,7 @@ void OnDLLProcessAttach(void)
 	AllocConsole();
 	freopen("CONOUT$", "w", stdout);
 	static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
-	plog::init(plog::debug, &consoleAppender);
+	plog::init(plog::verbose, &consoleAppender);
 #endif
 	PLOG_INFO << "Successfully Injected DLL.";
 
@@ -47,19 +47,53 @@ void OnDLLProcessAttach(void)
 	DetourTransactionBegin();
 	DetourUpdateThread(GetCurrentThread());
 
-	auto hModule = GetModuleHandle(L"User32.dll");
+	auto moduleUser32 = GetModuleHandle(L"User32.dll");
+	if (moduleUser32)
+	{
+		PLOG_INFO << "Successfully found User32.dll module";
 
-	user32::originalCallWindowProcW = reinterpret_cast<user32::CallWindowProcW>(GetProcAddress(hModule, "CallWindowProcW"));
-	DetourAttach(&(PVOID&)user32::originalCallWindowProcW, user32::CallWindowProcWHook);
+		user32::originalCallWindowProcW = reinterpret_cast<user32::CallWindowProcW>(GetProcAddress(moduleUser32, "CallWindowProcW"));
+		DetourAttach(&(PVOID&)user32::originalCallWindowProcW, user32::CallWindowProcWHook);
 
-	user32::originalSetWindowsHookExW = reinterpret_cast<user32::SetWindowsHookExW>(GetProcAddress(hModule, "SetWindowsHookExW"));
-	DetourAttach(&(PVOID&)user32::originalSetWindowsHookExW, user32::SetWindowsHookExWHook);
+		user32::originalSetWindowsHookExW = reinterpret_cast<user32::SetWindowsHookExW>(GetProcAddress(moduleUser32, "SetWindowsHookExW"));
+		DetourAttach(&(PVOID&)user32::originalSetWindowsHookExW, user32::SetWindowsHookExWHook);
+	}
+	else
+	{
+		PLOG_ERROR << "Failed to find User32.dll module";
+	}
 
+	auto moduleOpenGL32 = GetModuleHandle(L"opengl32.dll");
 
-	hModule = GetModuleHandle(L"opengl32.dll");
+	if (moduleOpenGL32)
+	{
+		PLOG_INFO << "Successfully found OpenGL32.dll module";
 
-	opengl::originalWglSwapBuffers = reinterpret_cast<opengl::wglSwapBuffers>(GetProcAddress(hModule, "wglSwapBuffers"));
-	DetourAttach(&(PVOID&)opengl::originalWglSwapBuffers, opengl::wglSwapBuffersHook);
+		opengl::originalWglSwapBuffers = reinterpret_cast<opengl::wglSwapBuffers>(GetProcAddress(moduleOpenGL32, "wglSwapBuffers"));
+		DetourAttach(&(PVOID&)opengl::originalWglSwapBuffers, opengl::wglSwapBuffersHook);
+
+		opengl::originalGlDrawArrays = reinterpret_cast<opengl::glDrawArrays>(GetProcAddress(moduleOpenGL32, "glDrawArrays"));
+		DetourAttach(&(PVOID&)opengl::originalGlDrawArrays, opengl::glDrawArraysHook);
+
+		opengl::originalGlEnableClientState = reinterpret_cast<opengl::glEnableClientState>(GetProcAddress(moduleOpenGL32, "glEnableClientState"));
+		DetourAttach(&(PVOID&)opengl::originalGlEnableClientState, opengl::glEnableClientStateHook);
+
+		opengl::originalGlDisableClientState = reinterpret_cast<opengl::glDisableClientState>(GetProcAddress(moduleOpenGL32, "glDisableClientState"));
+		DetourAttach(&(PVOID&)opengl::originalGlDisableClientState, opengl::glDisableClientStateHook);
+
+		opengl::originalGlVertexPointer = reinterpret_cast<opengl::glVertexPointer>(GetProcAddress(moduleOpenGL32, "glVertexPointer"));
+		DetourAttach(&(PVOID&)opengl::originalGlVertexPointer, opengl::glVertexPointerHook);
+
+		opengl::originalGlTexCoordPointer = reinterpret_cast<opengl::glTexCoordPointer>(GetProcAddress(moduleOpenGL32, "glTexCoordPointer"));
+		DetourAttach(&(PVOID&)opengl::originalGlTexCoordPointer, opengl::glTexCoordPointerHook);
+
+		opengl::originalGlNormalPointer = reinterpret_cast<opengl::glNormalPointer>(GetProcAddress(moduleOpenGL32, "glNormalPointer"));
+		DetourAttach(&(PVOID&)opengl::originalGlNormalPointer, opengl::glNormalPointerHook);
+	}
+	else
+	{
+		PLOG_ERROR << "Failed to find OpenGL32.dll module";
+	}
 
 	DetourTransactionCommit();
 
