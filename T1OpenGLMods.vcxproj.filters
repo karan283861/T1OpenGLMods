@@ -49,7 +49,7 @@
     <ClCompile Include="draw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="debug.cpp">
+    <ClCompile Include="fingerprint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -63,7 +63,7 @@
     <ClInclude Include="draw.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="debug.hpp">
+    <ClInclude Include="fingerprint.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -146,7 +146,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="customs.cpp" />
-    <ClCompile Include="debug.cpp" />
+    <ClCompile Include="fingerprint.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="draw.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -163,7 +163,7 @@
     <ClCompile Include="user32.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="debug.hpp" />
+    <ClInclude Include="fingerprint.hpp" />
     <ClInclude Include="draw.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>

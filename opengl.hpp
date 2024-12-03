@@ -9,7 +9,7 @@
 #include "imgui/imgui.h"
 #include "imgui/backends/imgui_impl_opengl2.h"
 #include "imgui/backends/imgui_impl_win32.h"
-#include "debug.hpp"
+#include "fingerprint.hpp"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -48,8 +48,8 @@ namespace opengl
 	extern glNormalPointer originalGlNormalPointer;
 	void __stdcall glNormalPointerHook(unsigned int type, unsigned int stride, void* data);
 #ifdef _DEBUG
-	extern debug::fingerprint::VertexData latestVertexData;
-	extern debug::fingerprint::UVData latestUVData;
-	extern debug::fingerprint::NormalData latestNormalData;
+	extern fingerprint::VertexData latestVertexData;
+	extern fingerprint::UVData latestUVData;
+	//extern fingerprint::NormalData latestNormalData;
 #endif
 }

@@ -20,6 +20,8 @@
 #include "user32.hpp"
 #include "opengl.hpp"
 
+#include "fingerprint.hpp"
+
 void OnDLLProcessAttach(void)
 {
 	auto base_address = reinterpret_cast<unsigned int>(GetModuleHandle(0));
@@ -29,7 +31,7 @@ void OnDLLProcessAttach(void)
 	AllocConsole();
 	freopen("CONOUT$", "w", stdout);
 	static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
-	plog::init(plog::verbose, &consoleAppender);
+	plog::init(plog::debug, &consoleAppender);
 #endif
 	PLOG_INFO << "Successfully Injected DLL.";
 
@@ -97,6 +99,7 @@ void OnDLLProcessAttach(void)
 
 	DetourTransactionCommit();
 
+	fingerprint::drawarrays::Initialise();
 }
 
 BOOL APIENTRY DllMain( HMODULE hModule,
