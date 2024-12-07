@@ -13,6 +13,11 @@ namespace fingerprint
 	public:
 		float m_X{ 0 }, m_Y{ 0 }, m_Z{ 0 }, m_Unused{ 0 };
 	};
+	
+	class UV {
+	public:
+		float m_X{ 0 }, m_Y{ 0 };
+	};
 
 	class VertexData
 	{
@@ -25,10 +30,7 @@ namespace fingerprint
 		void* m_VertexBuffer{ nullptr };
 	};
 
-	class UV {
-	public:
-		float m_X{ 0 }, m_Y{ 0 };
-	};
+	
 
 	class UVData
 	{
@@ -41,6 +43,8 @@ namespace fingerprint
 		void* m_UVBuffer{ nullptr };
 	};
 
+
+
 	//class NormalData
 	//{
 	//public:
@@ -50,6 +54,9 @@ namespace fingerprint
 	//	//std::unique_ptr<float[]> m_NormalBuffer;
 	//	void* m_NormalBuffer{ nullptr };
 	//};
+
+	extern VertexData latestVertexData;
+	extern UVData latestUVData;
 
 	namespace drawarrays
 	{
@@ -62,6 +69,7 @@ namespace fingerprint
 			VertexData m_VertexData;
 			UVData m_UVData;
 			std::shared_ptr<Vertex[]> m_VerticesPtr;
+			std::shared_ptr<UV[]> m_UVsPtr;
 			//NormalData m_NormalData;
 			static unsigned int CountLowerBound;
 			static unsigned int CountUpperBound;
@@ -93,9 +101,12 @@ namespace fingerprint
 		extern std::vector<Fingerprint> foundFingerprints;
 		extern std::unordered_map<unsigned int, std::unordered_map<unsigned int, std::vector<FingerprintReplacement>>> modeToCountToFingerprintReplacements;
 
+		//extern fingerprint::NormalData latestNormalData;
+
 		void DrawWindow(void);
 		void AddFingerprintReplacement(unsigned int mode, unsigned int count, FingerprintReplacement& fingerprintReplacement);
 		void Initialise(void);
+		bool CheckFingerprintFound(unsigned int mode, unsigned int count);
 		//void reset(void);
 	}
 }

@@ -3,6 +3,7 @@
 #include "fingerprint.hpp"
 #include <plog/Log.h>
 #include <format>
+#include "model.hpp"
 
 namespace opengl
 {
@@ -12,8 +13,6 @@ namespace opengl
 	bool textureCoordArrayEnabled{ false };
 	bool normalArrayEnabled{ false };
 
-	fingerprint::VertexData latestVertexData;
-	fingerprint::UVData latestUVData;
 	//fingerprint::NormalData latestNormalData;
 
 	wglSwapBuffers originalWglSwapBuffers{ reinterpret_cast<wglSwapBuffers>(0) };
@@ -57,108 +56,69 @@ namespace opengl
 			PLOG_DEBUG << std::format("Fingerprint found. Mode: {0}, First: {1}, Count: {2}",
 									  mode, first, count);
 
-			latestVertexData.m_Enabled = vertexArrayEnabled;
-			latestUVData.m_Enabled = textureCoordArrayEnabled;
+			//latestVertexData.m_Enabled = vertexArrayEnabled || true;
+			//latestUVData.m_Enabled = textureCoordArrayEnabled || true;
 			//latestNormalData.m_Enabled = normalArrayEnabled;
 
 			fingerprint::drawarrays::Fingerprint fingerprint;
 			fingerprint.m_Mode = mode;
 			fingerprint.m_First = first;
 			fingerprint.m_Count = count;
-			fingerprint.m_VertexData = latestVertexData;
-			fingerprint.m_UVData = latestUVData;
+			fingerprint.m_VertexData = fingerprint::latestVertexData;
+			fingerprint.m_UVData = fingerprint::latestUVData;
 			//fingerprint.m_NormalData = latestNormalData;
 			fingerprint.m_VerticesPtr = std::make_shared<fingerprint::Vertex[]>(count);
-			memcpy(fingerprint.m_VerticesPtr.get(), latestVertexData.m_VertexBuffer,
+			memcpy(fingerprint.m_VerticesPtr.get(), fingerprint::latestVertexData.m_VertexBuffer,
 				   sizeof(fingerprint::Vertex) * count);
+			fingerprint.m_UVsPtr = std::make_shared<fingerprint::UV[]>(4);
+			memcpy(fingerprint.m_UVsPtr.get(), fingerprint::latestUVData.m_UVBuffer,
+				   sizeof(fingerprint::UV) * 4);
 			fingerprint::drawarrays::foundFingerprints.push_back(fingerprint);
 			drawOriginal = false;
 		}
 #endif
-		auto countToFingerprintReplacements = fingerprint::drawarrays::modeToCountToFingerprintReplacements.find(mode);
-		if (countToFingerprintReplacements != fingerprint::drawarrays::modeToCountToFingerprintReplacements.end())
+
+		auto foundFingerprint{ fingerprint::drawarrays::CheckFingerprintFound(mode, count)};
+		
+
+		if (!foundFingerprint)
 		{
-			auto fingerprintReplacements = countToFingerprintReplacements->second.find(count);
-			if (fingerprintReplacements != countToFingerprintReplacements->second.end())
-			{
-				auto& replacements = fingerprintReplacements->second;
-				auto replacementFound{ false };
-				for (auto& replacement : replacements)
-				{
-					auto& fingerprintIdentifier = replacement.m_FingerprintIdentifier;
-					if (fingerprintIdentifier.m_Mode == mode && fingerprintIdentifier.m_Count == count)
-					{
-						auto foundVertex{ fingerprintIdentifier.m_IndexVertex.size() == 0 };
-						if (vertexArrayEnabled)
-						{
-							foundVertex = false;
-							auto foundAllVertex{ true };
-							for (auto& indexVertex : fingerprintIdentifier.m_IndexVertex)
-							{
-								auto index = indexVertex.first;
-								// get rid of magic numbers
-								auto vertexBufferX{ ((float*)(latestVertexData.m_VertexBuffer))[index * VERTEX_POINTER_SIZE + 0]};
-								auto vertexBufferY{ ((float*)(latestVertexData.m_VertexBuffer))[index * VERTEX_POINTER_SIZE + 1] };
-								auto vertexBufferZ{ ((float*)(latestVertexData.m_VertexBuffer))[index * VERTEX_POINTER_SIZE + 2] };
-
-								if (abs(indexVertex.second.m_X - vertexBufferX) < fingerprint::drawarrays::FingerprintIdentifier::VertexValueDelta &&
-									abs(indexVertex.second.m_Y - vertexBufferY) < fingerprint::drawarrays::FingerprintIdentifier::VertexValueDelta &&
-									abs(indexVertex.second.m_Z - vertexBufferZ) < fingerprint::drawarrays::FingerprintIdentifier::VertexValueDelta)
-								{
-									PLOG_DEBUG << std::format("Found Vertex. Index: {0}, X: {1}, Y: {2}, Z: {3}",
-															  indexVertex.first, indexVertex.second.m_X, indexVertex.second.m_Y, indexVertex.second.m_Z);
-								}
-								else
-								{
-									PLOG_DEBUG << std::format("Did NOT find Vertex. Index: {0}, X: {1}, Y: {2}, Z: {3}",
-															  indexVertex.first, indexVertex.second.m_X, indexVertex.second.m_Y, indexVertex.second.m_Z);
-									foundAllVertex = false;
-									break;
-								}
-							}
-							foundVertex = foundAllVertex;
-						}
-
-						auto foundUV{ fingerprintIdentifier.m_IndexUV.size() == 0 };
-						if (textureCoordArrayEnabled)
-						{
-							foundUV = false;
-							auto foundAllUV{ true };
-							for (auto& indexUV : fingerprintIdentifier.m_IndexUV)
-							{
-								auto index = indexUV.first;
-								auto uvBufferX{ ((float*)(latestUVData.m_UVBuffer))[index * TEXCOORD_POINTER_SIZE + 0] };
-								auto uvBufferY{ ((float*)(latestUVData.m_UVBuffer))[index * TEXCOORD_POINTER_SIZE + 1] };
-
-								if (abs(indexUV.second.m_X - uvBufferX) < fingerprint::drawarrays::FingerprintIdentifier::UVValueDelta &&
-									abs(indexUV.second.m_Y - uvBufferY) < fingerprint::drawarrays::FingerprintIdentifier::UVValueDelta)
-								{
-									PLOG_DEBUG << std::format("Found UV. Index: {0}, X: {1}, Y: {2}",
-															  indexUV.first, indexUV.second.m_X, indexUV.second.m_Y);
-								}
-								else
-								{
-									PLOG_DEBUG << std::format("Did not find UV. Index: {0}, X: {1}, Y: {2}",
-															  indexUV.first, indexUV.second.m_X, indexUV.second.m_Y);
-									foundAllUV = false;
-									break;
-								}
-							}
-							foundUV = foundAllUV;
-						}
-
-						if (foundVertex && foundUV)
-						{
-							drawOriginal = false;
-						}
-					}
-				}
-			}
+			foundFingerprint = fingerprint::drawarrays::CheckFingerprintFound(mode, -1);
 		}
+
+		if (foundFingerprint)
+		{
+			static model::CustomModel customModel("rail.obj");
+			static float vertices_array[66000];
+			memcpy(vertices_array, customModel.m_Vertices.data(), sizeof(float) * customModel.m_Vertices.size());
+
+			//drawOriginal = false;
+			originalGlEnableClientState(GL_VERTEX_ARRAY);
+			originalGlVertexPointer(VERTEX_POINTER_SIZE, VERTEX_POINTER_STRIDE, GL_FLOAT, customModel.m_Vertices.data());
+			originalGlVertexPointer(3, GL_FLOAT, VERTEX_POINTER_STRIDE, vertices_array);
+			
+			//originalGlDisableClientState(GL_VERTEX_ARRAY);
+			//memcpy(fingerprint::latestVertexData.m_VertexBuffer,
+			//	   customModel.m_Vertices.data(), sizeof(float) * customModel.m_Vertices.size());
+
+			originalGlEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			if (customModel.m_UVs.size() > 0)
+			{
+				originalGlTexCoordPointer(2, GL_FLOAT, 0, customModel.m_UVs.data());
+			}
+			else {
+
+			}
+
+			return originalGlDrawArrays(mode, 0, customModel.m_IndexCount);
+		}
+
 		if (drawOriginal)
 		{
-			return originalGlDrawArrays(mode, first, count);
+			originalGlDrawArrays(mode, first, count);
 		}
+		
+		originalGlEnableClientState(GL_VERTEX_ARRAY);
 	}
 
 	glEnableClientState originalGlEnableClientState{ reinterpret_cast<glEnableClientState>(0) };
@@ -220,7 +180,7 @@ namespace opengl
 	{
 		PLOG_VERBOSE << std::format("Size: {0}, Type: {1}, Stride: {2}, Data: {3}",
 									size, type, stride, data);
-		latestVertexData = fingerprint::VertexData{ false, /*size, type, stride,*/ data};
+		fingerprint::latestVertexData = fingerprint::VertexData{ false, /*size, type, stride,*/ data};
 		return originalGlVertexPointer(size, type, stride, data);
 	}
 
@@ -229,7 +189,7 @@ namespace opengl
 	{
 		PLOG_VERBOSE << std::format("Size: {0}, Type: {1}, Stride: {2}, Data: {3}",
 									size, type, stride, data);
-		latestUVData = fingerprint::UVData{ false, /*size, type, stride,*/ data };
+		fingerprint::latestUVData = fingerprint::UVData{ false, /*size, type, stride,*/ data };
 		return originalGlTexCoordPointer(size, type, stride, data);
 	}
 

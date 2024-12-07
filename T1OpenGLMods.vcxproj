@@ -159,6 +159,7 @@
     <ClCompile Include="imgui\imgui_draw.cpp" />
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClCompile Include="model.cpp" />
     <ClCompile Include="opengl.cpp" />
     <ClCompile Include="user32.cpp" />
   </ItemGroup>
@@ -168,6 +169,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="model.hpp" />
     <ClInclude Include="opengl.hpp" />
     <ClInclude Include="user32.hpp" />
   </ItemGroup>

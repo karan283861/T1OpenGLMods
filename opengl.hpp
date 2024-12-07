@@ -47,9 +47,4 @@ namespace opengl
 	typedef void(__stdcall* glNormalPointer)(int, int, void*);
 	extern glNormalPointer originalGlNormalPointer;
 	void __stdcall glNormalPointerHook(unsigned int type, unsigned int stride, void* data);
-#ifdef _DEBUG
-	extern fingerprint::VertexData latestVertexData;
-	extern fingerprint::UVData latestUVData;
-	//extern fingerprint::NormalData latestNormalData;
-#endif
 }
