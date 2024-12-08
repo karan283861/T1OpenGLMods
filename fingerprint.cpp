@@ -48,7 +48,7 @@ namespace fingerprint
 						ImGui::Text(string{ "First: " }.append(to_string(fingerprint.m_First)).c_str());
 						ImGui::Text(string{ "Count: " }.append(to_string(fingerprint.m_Count)).c_str());
 
-						if (fingerprint.m_VertexData.m_Enabled)
+						if (fingerprint.m_VertexData.m_Enabled || true)
 						{
 							ImGui::Separator();
 							ImGui::Indent();
@@ -77,7 +77,7 @@ namespace fingerprint
 							ImGui::Unindent();
 						}
 
-						if (fingerprint.m_UVData.m_Enabled)
+						if (fingerprint.m_UVData.m_Enabled || true)
 						{
 							ImGui::Separator();
 							ImGui::Indent();
@@ -201,7 +201,9 @@ namespace fingerprint
 			auto& spinfusorMainFingerprintIdentifer = spinfusorMainFingerprintReplacement.m_FingerprintIdentifier;
 			spinfusorMainFingerprintIdentifer.m_IdentifierName = string{ "Main spinfusor body" };
 			spinfusorMainFingerprintIdentifer.m_Mode = 4;
-			spinfusorMainFingerprintIdentifer.m_Count = 168;
+			spinfusorMainFingerprintIdentifer.m_Count = 108;
+			spinfusorMainFingerprintIdentifer.m_IndexUV = { {0, {0.946972, 0.325699}} };
+			spinfusorMainFingerprintReplacement.m_CustomModel = std::make_shared<model::CustomModel>("rail.obj");
 			AddFingerprintReplacement(spinfusorMainFingerprintIdentifer.m_Mode,
 									  spinfusorMainFingerprintIdentifer.m_Count,
 									  spinfusorMainFingerprintReplacement);
@@ -233,10 +235,10 @@ namespace fingerprint
 			foundFingerprints.clear();
 		}*/
 
-		bool CheckFingerprintFound(unsigned int mode, unsigned int count)
+		std::shared_ptr<model::CustomModel> CheckFingerprintFound(unsigned int mode, unsigned int count)
 		{
-			auto countToFingerprintReplacements = fingerprint::drawarrays::modeToCountToFingerprintReplacements.find(mode);
-			if (countToFingerprintReplacements != fingerprint::drawarrays::modeToCountToFingerprintReplacements.end())
+			auto countToFingerprintReplacements = modeToCountToFingerprintReplacements.find(mode);
+			if (countToFingerprintReplacements != modeToCountToFingerprintReplacements.end())
 			{
 				auto fingerprintReplacements = countToFingerprintReplacements->second.find(count);
 				if (fingerprintReplacements != countToFingerprintReplacements->second.end())
@@ -274,7 +276,7 @@ namespace fingerprint
 										PLOG_DEBUG << std::format("Did NOT find Vertex. Index: {0}, X: {1}, Y: {2}, Z: {3}",
 																  indexVertex.first, indexVertex.second.m_X, indexVertex.second.m_Y, indexVertex.second.m_Z);
 										foundAllVertex = false;
-										return false;
+										return nullptr;
 										break;
 									}
 								}
@@ -304,7 +306,7 @@ namespace fingerprint
 										PLOG_DEBUG << std::format("Did not find UV. Index: {0}, X: {1}, Y: {2}",
 																  indexUV.first, indexUV.second.m_X, indexUV.second.m_Y);
 										foundAllUV = false;
-										return false;
+										return nullptr;
 										break;
 									}
 								}
@@ -314,13 +316,13 @@ namespace fingerprint
 							if (foundVertex && foundUV)
 							{
 								PLOG_DEBUG << "Fingerprint found: " << std::format("Mode: {0}, Count: {1}", mode, count);
-								return true;
+								return replacement.m_CustomModel;
 							}
 						}
 					}
 				}
 			}
-			return false;
+			return nullptr;
 		}
 	}
 }

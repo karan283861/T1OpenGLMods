@@ -74,6 +74,9 @@ void OnDLLProcessAttach(void)
 		opengl::originalWglSwapBuffers = reinterpret_cast<opengl::wglSwapBuffers>(GetProcAddress(moduleOpenGL32, "wglSwapBuffers"));
 		DetourAttach(&(PVOID&)opengl::originalWglSwapBuffers, opengl::wglSwapBuffersHook);
 
+		opengl::originalWglMakeCurrent = reinterpret_cast<opengl::wglMakeCurrent>(GetProcAddress(moduleOpenGL32, "wglMakeCurrent"));
+		DetourAttach(&(PVOID&)opengl::originalWglMakeCurrent, opengl::wglMakeCurrentHook);
+
 		opengl::originalGlDrawArrays = reinterpret_cast<opengl::glDrawArrays>(GetProcAddress(moduleOpenGL32, "glDrawArrays"));
 		DetourAttach(&(PVOID&)opengl::originalGlDrawArrays, opengl::glDrawArraysHook);
 
@@ -91,6 +94,11 @@ void OnDLLProcessAttach(void)
 
 		opengl::originalGlNormalPointer = reinterpret_cast<opengl::glNormalPointer>(GetProcAddress(moduleOpenGL32, "glNormalPointer"));
 		DetourAttach(&(PVOID&)opengl::originalGlNormalPointer, opengl::glNormalPointerHook);
+
+		opengl::originalGlRotatef = reinterpret_cast<opengl::glRotatef>(GetProcAddress(moduleOpenGL32, "glRotatef"));
+		opengl::originalGlTranslatef = reinterpret_cast<opengl::glTranslatef>(GetProcAddress(moduleOpenGL32, "glTranslatef"));
+		opengl::originalGlScalef = reinterpret_cast<opengl::glScalef>(GetProcAddress(moduleOpenGL32, "glScalef"));
+		opengl::originalGlGenTextures = reinterpret_cast<opengl::glGenTextures>(GetProcAddress(moduleOpenGL32, "glGenTextures"));
 	}
 	else
 	{

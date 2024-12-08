@@ -9,7 +9,7 @@
 #include "imgui/imgui.h"
 #include "imgui/backends/imgui_impl_opengl2.h"
 #include "imgui/backends/imgui_impl_win32.h"
-#include "fingerprint.hpp"
+//#include "fingerprint.hpp"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -20,6 +20,10 @@ namespace opengl
 	typedef BOOL(__stdcall* wglSwapBuffers)(int*);
 	extern wglSwapBuffers originalWglSwapBuffers;
 	BOOL __stdcall wglSwapBuffersHook(int* arg1);
+
+	typedef void(__stdcall* wglMakeCurrent)(void* unnamedParam1, void* unnamedParam2);
+	extern wglMakeCurrent originalWglMakeCurrent;
+	void __stdcall wglMakeCurrentHook(void* unnamedParam1, void* unnamedParam2);
 
 	typedef void(__stdcall* glDrawArrays)(int, int, int);
 	extern glDrawArrays originalGlDrawArrays;
@@ -47,4 +51,16 @@ namespace opengl
 	typedef void(__stdcall* glNormalPointer)(int, int, void*);
 	extern glNormalPointer originalGlNormalPointer;
 	void __stdcall glNormalPointerHook(unsigned int type, unsigned int stride, void* data);
+
+	typedef void(__stdcall* glRotatef)(GLfloat angle, GLfloat x, GLfloat y, GLfloat z);
+	extern glRotatef originalGlRotatef;
+
+	typedef void(__stdcall* glTranslatef)(GLfloat x, GLfloat y, GLfloat z);
+	extern glTranslatef originalGlTranslatef;
+
+	typedef void(__stdcall* glScalef)(GLfloat x, GLfloat y, GLfloat z);
+	extern glScalef originalGlScalef;
+
+	typedef void(__stdcall* glGenTextures)(unsigned int, unsigned int*);
+	extern glGenTextures originalGlGenTextures;
 }

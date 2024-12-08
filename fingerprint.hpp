@@ -6,6 +6,7 @@
 #include <string>
 #include <unordered_map>
 #include "imgui/imgui.h"
+#include "model.hpp"
 
 namespace fingerprint
 {
@@ -95,7 +96,7 @@ namespace fingerprint
 		{
 		public:
 			FingerprintIdentifier m_FingerprintIdentifier;
-			void* m_CustomModelInformation{ nullptr };
+			std::shared_ptr<model::CustomModel> m_CustomModel;
 		};
 
 		extern std::vector<Fingerprint> foundFingerprints;
@@ -106,7 +107,7 @@ namespace fingerprint
 		void DrawWindow(void);
 		void AddFingerprintReplacement(unsigned int mode, unsigned int count, FingerprintReplacement& fingerprintReplacement);
 		void Initialise(void);
-		bool CheckFingerprintFound(unsigned int mode, unsigned int count);
+		std::shared_ptr<model::CustomModel> CheckFingerprintFound(unsigned int mode, unsigned int count);
 		//void reset(void);
 	}
 }

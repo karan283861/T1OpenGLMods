@@ -7,13 +7,28 @@
 
 namespace opengl
 {
+
 	bool showImGuiMenu{ false };
 
 	bool vertexArrayEnabled{ false };
 	bool textureCoordArrayEnabled{ false };
 	bool normalArrayEnabled{ false };
 
+	auto scale = model::Scale();
+	auto translate = model::Translate{ 0,0,0 };
+	auto rotate = model::Rotate{0, 0, 0, 0};
+
 	//fingerprint::NormalData latestNormalData;
+
+	wglMakeCurrent originalWglMakeCurrent{ reinterpret_cast<wglMakeCurrent>(0) };
+	void __stdcall wglMakeCurrentHook(void* unnamedParam1, void* unnamedParam2) {
+		if (!unnamedParam2)
+			ImGui_ImplOpenGL2_Shutdown();
+		else
+			ImGui_ImplOpenGL2_Init();
+
+		originalWglMakeCurrent(unnamedParam1, unnamedParam2);
+	}
 
 	wglSwapBuffers originalWglSwapBuffers{ reinterpret_cast<wglSwapBuffers>(0) };
 	BOOL __stdcall wglSwapBuffersHook(int* arg1) {
@@ -27,6 +42,11 @@ namespace opengl
 #ifdef _DEBUG
 			fingerprint::drawarrays::DrawWindow();
 #endif
+			ImGui::Begin("Modelification");
+			ImGui::SliderFloat3("Scale", &scale.x, 0, 1);
+			ImGui::SliderFloat3("Translate", &translate.x, -5, 5);
+			ImGui::SliderFloat4("Rotate", &rotate.a, -360, 360);
+			ImGui::End();
 		}
 
 #ifdef _DEBUG
@@ -88,27 +108,17 @@ namespace opengl
 
 		if (foundFingerprint)
 		{
-			static model::CustomModel customModel("rail.obj");
-			static float vertices_array[66000];
-			memcpy(vertices_array, customModel.m_Vertices.data(), sizeof(float) * customModel.m_Vertices.size());
-
-			//drawOriginal = false;
+			auto& customModel = *foundFingerprint.get();
 			originalGlEnableClientState(GL_VERTEX_ARRAY);
-			originalGlVertexPointer(VERTEX_POINTER_SIZE, VERTEX_POINTER_STRIDE, GL_FLOAT, customModel.m_Vertices.data());
-			originalGlVertexPointer(3, GL_FLOAT, VERTEX_POINTER_STRIDE, vertices_array);
-			
-			//originalGlDisableClientState(GL_VERTEX_ARRAY);
-			//memcpy(fingerprint::latestVertexData.m_VertexBuffer,
-			//	   customModel.m_Vertices.data(), sizeof(float) * customModel.m_Vertices.size());
-
+			originalGlVertexPointer(3, GL_FLOAT, VERTEX_POINTER_STRIDE, customModel.m_Vertices->data());
 			originalGlEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			if (customModel.m_UVs.size() > 0)
-			{
-				originalGlTexCoordPointer(2, GL_FLOAT, 0, customModel.m_UVs.data());
-			}
-			else {
+			originalGlTexCoordPointer(2, GL_FLOAT, 0, customModel.m_UVs->data());
+			originalGlEnableClientState(GL_NORMAL_ARRAY);
+			originalGlNormalPointer(GL_FLOAT, 0, customModel.m_Normals->data());
 
-			}
+			originalGlScalef(scale.x, scale.y, scale.z);
+			originalGlTranslatef(translate.x, translate.y, translate.z);
+			originalGlRotatef(rotate.a, rotate.b, rotate.c, rotate.d);
 
 			return originalGlDrawArrays(mode, 0, customModel.m_IndexCount);
 		}
@@ -201,4 +211,10 @@ namespace opengl
 		//latestNormalData = fingerprint::NormalData{ false, type, stride, data };
 		return originalGlNormalPointer(type, stride, data);
 	}
+
+	glRotatef originalGlRotatef{ reinterpret_cast<glRotatef>(0) };
+	glTranslatef originalGlTranslatef{ reinterpret_cast<glTranslatef>(0) };
+	glScalef originalGlScalef{ reinterpret_cast<glScalef>(0) };
+
+	glGenTextures originalGlGenTextures{ reinterpret_cast<glGenTextures>(0) };
 }
