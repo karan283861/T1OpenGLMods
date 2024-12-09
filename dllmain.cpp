@@ -105,6 +105,8 @@ void OnDLLProcessAttach(void)
 		opengl::originalGlTexImage2D = reinterpret_cast<opengl::glTexImage2D>(GetProcAddress(moduleOpenGL32, "glTexImage2D"));
 
 		opengl::originalGlTexParameteri = reinterpret_cast<opengl::glTexParameteri>(GetProcAddress(moduleOpenGL32, "glTexParameteri"));
+		opengl::originalGlTexEnvi = reinterpret_cast<opengl::glTexEnvi>(GetProcAddress(moduleOpenGL32, "glTexEnvi"));
+		opengl::originalGlEnable = reinterpret_cast<opengl::glEnable>(GetProcAddress(moduleOpenGL32, "glEnable"));
 	}
 	else
 	{

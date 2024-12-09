@@ -75,4 +75,10 @@ namespace opengl
 
 	typedef void(__stdcall* glTexParameteri)(int, int, int);
 	extern glTexParameteri originalGlTexParameteri;
+
+	typedef void(__stdcall* glTexEnvi)(int, int, int);
+	extern glTexEnvi originalGlTexEnvi;
+
+	typedef void(__stdcall* glEnable)(int);
+	extern glEnable originalGlEnable;
 }

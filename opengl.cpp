@@ -130,10 +130,19 @@ namespace opengl
 				originalGlTranslatef(translate.x, translate.y, translate.z);
 				originalGlRotatef(rotate.a, rotate.b, rotate.c, rotate.d);
 
+				originalGlEnable(GL_TEXTURE_2D);
+				originalGlTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+				
 				originalGlBindTexture(GL_TEXTURE_2D, customModel.m_Texture.m_TextureName);
 				originalGlTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				originalGlTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-				return originalGlDrawArrays(mode, 0, customModel.m_IndexCount);
+				originalGlDrawArrays(mode, 0, customModel.m_IndexCount);
+				
+				originalGlBindTexture(GL_TEXTURE_2D, 0);
+				originalGlTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+				return;
 			}
 		}
 
@@ -248,5 +257,7 @@ namespace opengl
 	}
 
 	glTexParameteri originalGlTexParameteri{ reinterpret_cast<glTexParameteri>(0) };
+	glTexEnvi originalGlTexEnvi{ reinterpret_cast<glTexEnvi>(0) };
+	glEnable originalGlEnable{ reinterpret_cast<glEnable>(0) };
 
 }
