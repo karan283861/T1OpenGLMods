@@ -201,7 +201,7 @@ namespace fingerprint
 			auto& spinfusorMainFingerprintIdentifer = spinfusorMainFingerprintReplacement.m_FingerprintIdentifier;
 			spinfusorMainFingerprintIdentifer.m_IdentifierName = string{ "Main spinfusor body" };
 			spinfusorMainFingerprintIdentifer.m_Mode = 4;
-			spinfusorMainFingerprintIdentifer.m_Count = 108;
+			spinfusorMainFingerprintIdentifer.m_Count = -1;
 			spinfusorMainFingerprintIdentifer.m_IndexUV = { {0, {0.946972, 0.325699}} };
 			spinfusorMainFingerprintReplacement.m_CustomModel = std::make_shared<model::CustomModel>("rail.obj");
 			AddFingerprintReplacement(spinfusorMainFingerprintIdentifer.m_Mode,
@@ -225,10 +225,10 @@ namespace fingerprint
 			spinfusorDiscFingerprint2Identifer.m_Mode = 4;
 			spinfusorDiscFingerprint2Identifer.m_Count = -1;
 			spinfusorDiscFingerprint2Identifer.m_IndexUV = { {0, {0.219318, 0.846034}} };
-			spinfusorDiscFingerprint2Replacement.m_CustomModel = std::make_shared<model::CustomModel>("rail.obj");
-			/*AddFingerprintReplacement(spinfusorDiscFingerprint2Identifer.m_Mode,
+			spinfusorDiscFingerprint2Replacement.m_CustomModel = std::make_shared<model::CustomModel>("cube.obj");
+			AddFingerprintReplacement(spinfusorDiscFingerprint2Identifer.m_Mode,
 									  spinfusorDiscFingerprint2Identifer.m_Count,
-									  spinfusorDiscFingerprint2Replacement);*/
+									  spinfusorDiscFingerprint2Replacement);
 
 		}
 
@@ -258,30 +258,30 @@ namespace fingerprint
 							{
 								foundVertex = false;
 								auto foundAllVertex{ true };
-								for (auto& indexVertex : fingerprintIdentifier.m_IndexVertex)
-								{
-									auto index = indexVertex.first;
-									// get rid of magic numbers
-									auto vertexBufferX{ ((float*)(latestVertexData.m_VertexBuffer))[index * VERTEX_POINTER_SIZE + 0] };
-									auto vertexBufferY{ ((float*)(latestVertexData.m_VertexBuffer))[index * VERTEX_POINTER_SIZE + 1] };
-									auto vertexBufferZ{ ((float*)(latestVertexData.m_VertexBuffer))[index * VERTEX_POINTER_SIZE + 2] };
+								//for (auto& indexVertex : fingerprintIdentifier.m_IndexVertex)
+								//{
+								//	auto index = indexVertex.first;
+								//	// get rid of magic numbers
+								//	auto vertexBufferX{ ((float*)(latestVertexData.m_VertexBuffer))[index * VERTEX_POINTER_SIZE + 0] };
+								//	auto vertexBufferY{ ((float*)(latestVertexData.m_VertexBuffer))[index * VERTEX_POINTER_SIZE + 1] };
+								//	auto vertexBufferZ{ ((float*)(latestVertexData.m_VertexBuffer))[index * VERTEX_POINTER_SIZE + 2] };
 
-									if (abs(indexVertex.second.m_X - vertexBufferX) < fingerprint::drawarrays::FingerprintIdentifier::VertexValueDelta &&
-										abs(indexVertex.second.m_Y - vertexBufferY) < fingerprint::drawarrays::FingerprintIdentifier::VertexValueDelta &&
-										abs(indexVertex.second.m_Z - vertexBufferZ) < fingerprint::drawarrays::FingerprintIdentifier::VertexValueDelta)
-									{
-										PLOG_DEBUG << std::format("Found Vertex. Index: {0}, X: {1}, Y: {2}, Z: {3}",
-																  indexVertex.first, indexVertex.second.m_X, indexVertex.second.m_Y, indexVertex.second.m_Z);
-									}
-									else
-									{
-										PLOG_DEBUG << std::format("Did NOT find Vertex. Index: {0}, X: {1}, Y: {2}, Z: {3}",
-																  indexVertex.first, indexVertex.second.m_X, indexVertex.second.m_Y, indexVertex.second.m_Z);
-										foundAllVertex = false;
-										return nullptr;
-										break;
-									}
-								}
+								//	if (abs(indexVertex.second.m_X - vertexBufferX) < fingerprint::drawarrays::FingerprintIdentifier::VertexValueDelta &&
+								//		abs(indexVertex.second.m_Y - vertexBufferY) < fingerprint::drawarrays::FingerprintIdentifier::VertexValueDelta &&
+								//		abs(indexVertex.second.m_Z - vertexBufferZ) < fingerprint::drawarrays::FingerprintIdentifier::VertexValueDelta)
+								//	{
+								//		PLOG_DEBUG << std::format("Found Vertex. Index: {0}, X: {1}, Y: {2}, Z: {3}",
+								//								  indexVertex.first, indexVertex.second.m_X, indexVertex.second.m_Y, indexVertex.second.m_Z);
+								//	}
+								//	else
+								//	{
+								//		PLOG_DEBUG << std::format("Did NOT find Vertex. Index: {0}, X: {1}, Y: {2}, Z: {3}",
+								//								  indexVertex.first, indexVertex.second.m_X, indexVertex.second.m_Y, indexVertex.second.m_Z);
+								//		foundAllVertex = false;
+								//		return nullptr;
+								//		break;
+								//	}
+								//}
 								foundVertex = foundAllVertex;
 							}
 
@@ -308,7 +308,7 @@ namespace fingerprint
 										PLOG_DEBUG << std::format("Did not find UV. Index: {0}, X: {1}, Y: {2}",
 																  indexUV.first, indexUV.second.m_X, indexUV.second.m_Y);
 										foundAllUV = false;
-										return nullptr;
+										//return nullptr;
 										break;
 									}
 								}
