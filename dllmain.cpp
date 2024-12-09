@@ -101,7 +101,10 @@ void OnDLLProcessAttach(void)
 
 		opengl::originalGlGenTextures = reinterpret_cast<opengl::glGenTextures>(GetProcAddress(moduleOpenGL32, "glGenTextures"));
 		opengl::originalGlBindTexture = reinterpret_cast<opengl::glBindTexture>(GetProcAddress(moduleOpenGL32, "glBindTexture"));
+		DetourAttach(&(PVOID&)opengl::originalGlBindTexture, opengl::glBindTextureHook);
 		opengl::originalGlTexImage2D = reinterpret_cast<opengl::glTexImage2D>(GetProcAddress(moduleOpenGL32, "glTexImage2D"));
+
+		opengl::originalGlTexParameteri = reinterpret_cast<opengl::glTexParameteri>(GetProcAddress(moduleOpenGL32, "glTexParameteri"));
 	}
 	else
 	{

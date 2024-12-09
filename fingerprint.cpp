@@ -208,6 +208,7 @@ namespace fingerprint
 									  spinfusorMainFingerprintIdentifer.m_Count,
 									  spinfusorMainFingerprintReplacement);
 
+			model::customModels.push_back(spinfusorMainFingerprintReplacement.m_CustomModel);
 			//auto spinfusorDiscFingerprint1Replacement = FingerprintReplacement{};
 			//auto& spinfusorDiscFingerprint1Identifer = spinfusorDiscFingerprint1Replacement.m_FingerprintIdentifier;
 			//spinfusorDiscFingerprint1Identifer.m_IdentifierName = string{ "Spinfusir disc body 1" };

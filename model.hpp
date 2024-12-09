@@ -49,9 +49,12 @@ namespace model
 		Translate m_Translate = { 2.7, -1.146, -4.271 };
 		bool m_SucessfullyLoadedModel{ false };
 		Texture m_Texture;
+		std::string m_FileName;
 
 		CustomModel(std::string name);
 	private:
 		void LoadObj(std::string name, bool invertUVs = true);
 	};
+
+	extern std::vector<std::shared_ptr<CustomModel>> customModels;
 }

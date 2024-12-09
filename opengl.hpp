@@ -68,7 +68,11 @@ namespace opengl
 
 	typedef void(__stdcall* glBindTexture)(int, int);
 	extern glBindTexture originalGlBindTexture;
+	void __stdcall glBindTextureHook(int target, int texture);
 
 	typedef void(__stdcall* glTexImage2D)(unsigned int, int, int, int, int, int, int, int, void*);
 	extern glTexImage2D originalGlTexImage2D;
+
+	typedef void(__stdcall* glTexParameteri)(int, int, int);
+	extern glTexParameteri originalGlTexParameteri;
 }

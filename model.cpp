@@ -7,6 +7,8 @@
 namespace model
 {
 
+	std::vector<std::shared_ptr<CustomModel>> customModels;
+
 	void Texture::LoadTexture(std::string name)
 	{
 		opengl::originalGlGenTextures(1, &m_TextureName);
@@ -34,11 +36,13 @@ namespace model
 			auto name = objPath;
 			name = name.replace_extension(".png");
 
+			m_FileName = name.string();
+
 			LoadObj(std::filesystem::absolute(objPath).string());
 
 			auto pngPath = folderPath / "replacements" / name;
 
-			m_Texture.LoadTexture(pngPath.string());
+			//m_Texture.LoadTexture(pngPath.string());
 			m_SucessfullyLoadedModel = true;
 		}
 	}

@@ -20,13 +20,20 @@ namespace opengl
 
 	//fingerprint::NormalData latestNormalData;
 
+	static bool reloadTextures{ true };
+
 	wglMakeCurrent originalWglMakeCurrent{ reinterpret_cast<wglMakeCurrent>(0) };
 	void __stdcall wglMakeCurrentHook(void* unnamedParam1, void* unnamedParam2) {
 		if (!unnamedParam2)
+		{
 			ImGui_ImplOpenGL2_Shutdown();
+		}
 		else
+		{
 			ImGui_ImplOpenGL2_Init();
-
+			reloadTextures = true;
+		}
+		
 		originalWglMakeCurrent(unnamedParam1, unnamedParam2);
 	}
 
@@ -124,6 +131,7 @@ namespace opengl
 				originalGlRotatef(rotate.a, rotate.b, rotate.c, rotate.d);
 
 				originalGlBindTexture(GL_TEXTURE_2D, customModel.m_Texture.m_TextureName);
+				originalGlTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 				return originalGlDrawArrays(mode, 0, customModel.m_IndexCount);
 			}
@@ -225,4 +233,20 @@ namespace opengl
 	glGenTextures originalGlGenTextures{ reinterpret_cast<glGenTextures>(0) };
 	glBindTexture originalGlBindTexture{ reinterpret_cast<glBindTexture>(0) };
 	glTexImage2D originalGlTexImage2D{ reinterpret_cast<glTexImage2D>(0) };
+
+	void __stdcall glBindTextureHook(int target, int texture)
+	{
+		if (reloadTextures)
+		{
+			reloadTextures = false;
+			for (auto& customModel : model::customModels)
+			{
+				customModel.get()->m_Texture.LoadTexture(customModel.get()->m_FileName);
+			}
+		}
+		return originalGlBindTexture(target, texture);
+	}
+
+	glTexParameteri originalGlTexParameteri{ reinterpret_cast<glTexParameteri>(0) };
+
 }
