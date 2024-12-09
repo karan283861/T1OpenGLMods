@@ -14,9 +14,9 @@ namespace opengl
 	bool textureCoordArrayEnabled{ false };
 	bool normalArrayEnabled{ false };
 
-	auto scale = model::Scale();
-	auto translate = model::Translate{ 0,0,0 };
-	auto rotate = model::Rotate{0, 0, 0, 0};
+	auto scale = model::Scale{ 0.1, 0.1, 0.1 };
+	auto translate = model::Translate{ 0, 3.485,0 };
+	auto rotate = model::Rotate{ 81.818, 1, 0, 0};
 
 	//fingerprint::NormalData latestNormalData;
 
@@ -109,18 +109,24 @@ namespace opengl
 		if (foundFingerprint)
 		{
 			auto& customModel = *foundFingerprint.get();
-			originalGlEnableClientState(GL_VERTEX_ARRAY);
-			originalGlVertexPointer(3, GL_FLOAT, VERTEX_POINTER_STRIDE, customModel.m_Vertices->data());
-			originalGlEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			originalGlTexCoordPointer(2, GL_FLOAT, 0, customModel.m_UVs->data());
-			originalGlEnableClientState(GL_NORMAL_ARRAY);
-			originalGlNormalPointer(GL_FLOAT, 0, customModel.m_Normals->data());
 
-			originalGlScalef(scale.x, scale.y, scale.z);
-			originalGlTranslatef(translate.x, translate.y, translate.z);
-			originalGlRotatef(rotate.a, rotate.b, rotate.c, rotate.d);
+			if (customModel.m_SucessfullyLoadedModel)
+			{
+				originalGlEnableClientState(GL_VERTEX_ARRAY);
+				originalGlVertexPointer(3, GL_FLOAT, VERTEX_POINTER_STRIDE, customModel.m_Vertices->data());
+				originalGlEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				originalGlTexCoordPointer(2, GL_FLOAT, 0, customModel.m_UVs->data());
+				originalGlEnableClientState(GL_NORMAL_ARRAY);
+				originalGlNormalPointer(GL_FLOAT, 0, customModel.m_Normals->data());
 
-			return originalGlDrawArrays(mode, 0, customModel.m_IndexCount);
+				originalGlScalef(scale.x, scale.y, scale.z);
+				originalGlTranslatef(translate.x, translate.y, translate.z);
+				originalGlRotatef(rotate.a, rotate.b, rotate.c, rotate.d);
+
+				originalGlBindTexture(GL_TEXTURE_2D, customModel.m_Texture.m_TextureName);
+
+				return originalGlDrawArrays(mode, 0, customModel.m_IndexCount);
+			}
 		}
 
 		if (drawOriginal)
@@ -217,4 +223,6 @@ namespace opengl
 	glScalef originalGlScalef{ reinterpret_cast<glScalef>(0) };
 
 	glGenTextures originalGlGenTextures{ reinterpret_cast<glGenTextures>(0) };
+	glBindTexture originalGlBindTexture{ reinterpret_cast<glBindTexture>(0) };
+	glTexImage2D originalGlTexImage2D{ reinterpret_cast<glTexImage2D>(0) };
 }

@@ -224,6 +224,7 @@ namespace fingerprint
 			spinfusorDiscFingerprint2Identifer.m_Mode = 4;
 			spinfusorDiscFingerprint2Identifer.m_Count = -1;
 			spinfusorDiscFingerprint2Identifer.m_IndexUV = { {0, {0.219318, 0.846034}} };
+			spinfusorDiscFingerprint2Replacement.m_CustomModel = std::make_shared<model::CustomModel>("rail.obj");
 			/*AddFingerprintReplacement(spinfusorDiscFingerprint2Identifer.m_Mode,
 									  spinfusorDiscFingerprint2Identifer.m_Count,
 									  spinfusorDiscFingerprint2Replacement);*/

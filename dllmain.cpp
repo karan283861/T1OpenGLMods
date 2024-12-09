@@ -98,7 +98,10 @@ void OnDLLProcessAttach(void)
 		opengl::originalGlRotatef = reinterpret_cast<opengl::glRotatef>(GetProcAddress(moduleOpenGL32, "glRotatef"));
 		opengl::originalGlTranslatef = reinterpret_cast<opengl::glTranslatef>(GetProcAddress(moduleOpenGL32, "glTranslatef"));
 		opengl::originalGlScalef = reinterpret_cast<opengl::glScalef>(GetProcAddress(moduleOpenGL32, "glScalef"));
+
 		opengl::originalGlGenTextures = reinterpret_cast<opengl::glGenTextures>(GetProcAddress(moduleOpenGL32, "glGenTextures"));
+		opengl::originalGlBindTexture = reinterpret_cast<opengl::glBindTexture>(GetProcAddress(moduleOpenGL32, "glBindTexture"));
+		opengl::originalGlTexImage2D = reinterpret_cast<opengl::glTexImage2D>(GetProcAddress(moduleOpenGL32, "glTexImage2D"));
 	}
 	else
 	{

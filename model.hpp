@@ -1,8 +1,10 @@
 #pragma once
+#include <Windows.h>
 #include "opengl.hpp"
 #include <vector>
 #include <memory>
 #include <string>
+#include <filesystem>
 
 namespace model
 {
@@ -21,6 +23,20 @@ namespace model
 		float a, b, c, d;
 	};
 
+	class Texture
+	{
+	public:
+
+		int m_X{ 0 };
+		int m_Y{ 0 };
+		int m_Channels{ 0 };
+		unsigned int m_TextureName{ 0 };
+		//std::shared_ptr<void> m_ImageData;
+		void* m_ImageData{ nullptr };
+
+		void LoadTexture(std::string name);
+	};
+
 	class CustomModel
 	{
 	public:
@@ -28,17 +44,13 @@ namespace model
 		std::shared_ptr<std::vector<float>> m_Vertices;
 		std::shared_ptr<std::vector<float>> m_UVs;
 		std::shared_ptr<std::vector<float>> m_Normals;
-		Scale m_Scale;
-		Rotate m_Rotate;
-		Translate m_Translate;
+		Scale m_Scale{ 0.418, 0.418, 0.418 };
+		Rotate m_Rotate{ 71.25, 47.917, 2.083, -2.083 };
+		Translate m_Translate = { 2.7, -1.146, -4.271 };
+		bool m_SucessfullyLoadedModel{ false };
+		Texture m_Texture;
 
-		CustomModel(std::string name)
-		{
-			m_Vertices = std::make_shared<std::vector<float>>();
-			m_UVs = std::make_shared<std::vector<float>>();
-			m_Normals = std::make_shared<std::vector<float>>();
-			LoadObj(name);
-		}
+		CustomModel(std::string name);
 	private:
 		void LoadObj(std::string name, bool invertUVs = true);
 	};

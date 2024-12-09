@@ -32,9 +32,11 @@ namespace opengl
 	typedef void(__stdcall* glEnableClientState)(unsigned int);
 	extern glEnableClientState originalGlEnableClientState;
 	void __stdcall glEnableClientStateHook(unsigned int array);
+
 	typedef void(__stdcall* glDisableClientState)(unsigned int);
 	extern glDisableClientState originalGlDisableClientState;
 	void __stdcall glDisableClientStateHook(unsigned int array);
+	
 	extern bool vertexArrayEnabled;
 	extern bool textureCoordArrayEnabled;
 	extern bool normalArrayEnabled;
@@ -63,4 +65,10 @@ namespace opengl
 
 	typedef void(__stdcall* glGenTextures)(unsigned int, unsigned int*);
 	extern glGenTextures originalGlGenTextures;
+
+	typedef void(__stdcall* glBindTexture)(int, int);
+	extern glBindTexture originalGlBindTexture;
+
+	typedef void(__stdcall* glTexImage2D)(unsigned int, int, int, int, int, int, int, int, void*);
+	extern glTexImage2D originalGlTexImage2D;
 }
