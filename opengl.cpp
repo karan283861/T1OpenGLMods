@@ -298,7 +298,7 @@ namespace opengl
 			reloadTextures = false;
 			for (auto& customModel : model::customModels)
 			{
-				customModel.get()->m_Texture.LoadTexture(customModel.get()->m_FileName);
+				customModel.get()->m_Texture.LoadTexture(customModel.get()->m_TextureFileName);
 			}
 		}
 		return originalGlBindTexture(target, texture);

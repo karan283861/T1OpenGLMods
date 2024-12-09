@@ -39,6 +39,7 @@ namespace model
 
 			name = name.replace_extension(".png");
 			auto pngPath = folderPath / "replacements" / name;
+			m_TextureFileName = pngPath.string();
 
 			//m_Texture.LoadTexture(pngPath.string());
 			m_SucessfullyLoadedModel = true;

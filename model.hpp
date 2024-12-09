@@ -50,6 +50,7 @@ namespace model
 		bool m_SucessfullyLoadedModel{ false };
 		Texture m_Texture;
 		std::string m_FileName;
+		std::string m_TextureFileName;
 
 		CustomModel(std::string name);
 	private:
