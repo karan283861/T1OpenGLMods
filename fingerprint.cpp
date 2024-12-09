@@ -23,7 +23,13 @@ namespace fingerprint
 		decltype(FingerprintIdentifier::UVValueDelta) FingerprintIdentifier::UVValueDelta{ 0.001 };
 
 		std::vector<Fingerprint> foundFingerprints;
-		std::unordered_map<unsigned int, std::unordered_map<unsigned int, std::vector<FingerprintReplacement>>> modeToCountToFingerprintReplacements;
+		std::unordered_map<unsigned int, std::unordered_map<unsigned int, std::vector<std::shared_ptr<FingerprintReplacement>>>> modeToCountToFingerprintReplacements;
+		std::vector<std::shared_ptr<FingerprintReplacement>> fingerprintReplacements;
+
+		FingerprintReplacement::FingerprintReplacement(void)
+		{
+			fingerprintReplacements.push_back(std::shared_ptr<FingerprintReplacement>(this));
+		}
 
 		void DrawWindow(void)
 		{
@@ -145,9 +151,9 @@ namespace fingerprint
 					ImGui::Separator();
 					if (ImGui::Button("Add Fingerprint"))
 					{
-						AddFingerprintReplacement(fingerprintReplacement.m_FingerprintIdentifier.m_Mode,
+						/*AddFingerprintReplacement(fingerprintReplacement.m_FingerprintIdentifier.m_Mode,
 												  fingerprintReplacement.m_FingerprintIdentifier.m_Count,
-												  fingerprintReplacement);
+												  fingerprintReplacement);*/
 						fingerprintReplacement = FingerprintReplacement{};
 					}
 				}
@@ -166,7 +172,7 @@ namespace fingerprint
 									for (int i = 0; i < fingerprintReplacements.size(); i++)
 									{
 										auto& fingerprintReplacement = fingerprintReplacements[i];
-										auto& fingerprintIdentifier = fingerprintReplacement.m_FingerprintIdentifier;
+										auto& fingerprintIdentifier = fingerprintReplacement->m_FingerprintIdentifier;
 										if (ImGui::CollapsingHeader(string{ "Fingerprint Replacement" }.
 																	append("##").append(to_string(i)).c_str()))
 										{
@@ -190,25 +196,33 @@ namespace fingerprint
 			ImGui::End();
 		}
 
-		void AddFingerprintReplacement(unsigned int mode, unsigned int count, FingerprintReplacement& fingerprintReplacement)
+		//void AddFingerprintReplacement(unsigned int mode, unsigned int count, FingerprintReplacement& fingerprintReplacement)
+		//{
+		//	//modeToCountToFingerprintReplacements[mode][count].push_back(fingerprintReplacement);
+		//}
+
+		//void AddFingerprintReplacement(FingerprintReplacement& fingerprintReplacement)
+		//{
+		//	//modeToCountToFingerprintReplacements[fingerprintReplacement.m_FingerprintIdentifier.m_Mode][fingerprintReplacement.m_FingerprintIdentifier.m_Count].push_back(fingerprintReplacement);
+		//}
+
+		void AddFingerprintReplacement(std::shared_ptr<FingerprintReplacement> fingerprintReplacement)
 		{
-			modeToCountToFingerprintReplacements[mode][count].push_back(fingerprintReplacement);
+			modeToCountToFingerprintReplacements[fingerprintReplacement->m_FingerprintIdentifier.m_Mode][fingerprintReplacement->m_FingerprintIdentifier.m_Count].push_back(fingerprintReplacement);
 		}
 
 		void Initialise(void)
 		{
-			auto spinfusorMainFingerprintReplacement = FingerprintReplacement{};
-			auto& spinfusorMainFingerprintIdentifer = spinfusorMainFingerprintReplacement.m_FingerprintIdentifier;
+			auto spinfusorMainFingerprintReplacement = std::make_shared<FingerprintReplacement>();
+			auto& spinfusorMainFingerprintIdentifer = spinfusorMainFingerprintReplacement->m_FingerprintIdentifier;
 			spinfusorMainFingerprintIdentifer.m_IdentifierName = string{ "Main spinfusor body" };
 			spinfusorMainFingerprintIdentifer.m_Mode = 4;
 			spinfusorMainFingerprintIdentifer.m_Count = -1;
 			spinfusorMainFingerprintIdentifer.m_IndexUV = { {0, {0.946972, 0.325699}} };
-			spinfusorMainFingerprintReplacement.m_CustomModel = std::make_shared<model::CustomModel>("rail.obj");
-			AddFingerprintReplacement(spinfusorMainFingerprintIdentifer.m_Mode,
-									  spinfusorMainFingerprintIdentifer.m_Count,
-									  spinfusorMainFingerprintReplacement);
+			//spinfusorMainFingerprintReplacement->m_CustomModel = std::make_shared<model::CustomModel>("mp5.obj");
+			AddFingerprintReplacement(spinfusorMainFingerprintReplacement);
 
-			model::customModels.push_back(spinfusorMainFingerprintReplacement.m_CustomModel);
+			//model::customModels.push_back(spinfusorMainFingerprintReplacement.m_CustomModel);
 			//auto spinfusorDiscFingerprint1Replacement = FingerprintReplacement{};
 			//auto& spinfusorDiscFingerprint1Identifer = spinfusorDiscFingerprint1Replacement.m_FingerprintIdentifier;
 			//spinfusorDiscFingerprint1Identifer.m_IdentifierName = string{ "Spinfusir disc body 1" };
@@ -219,16 +233,66 @@ namespace fingerprint
 			//						  spinfusorDiscFingerprint1Identifer.m_Count,
 			//						  spinfusorDiscFingerprint1Replacement);
 
-			auto spinfusorDiscFingerprint2Replacement = FingerprintReplacement{};
-			auto& spinfusorDiscFingerprint2Identifer = spinfusorDiscFingerprint2Replacement.m_FingerprintIdentifier;
-			spinfusorDiscFingerprint2Identifer.m_IdentifierName = string{ "Spinfusir disc" };
+			auto spinfusorDiscFingerprint2Replacement = std::make_shared<FingerprintReplacement>();
+			auto& spinfusorDiscFingerprint2Identifer = spinfusorDiscFingerprint2Replacement->m_FingerprintIdentifier;
+			spinfusorDiscFingerprint2Identifer.m_IdentifierName = string{ "Spinfusor disc" };
 			spinfusorDiscFingerprint2Identifer.m_Mode = 4;
 			spinfusorDiscFingerprint2Identifer.m_Count = -1;
 			spinfusorDiscFingerprint2Identifer.m_IndexUV = { {0, {0.219318, 0.846034}} };
-			spinfusorDiscFingerprint2Replacement.m_CustomModel = std::make_shared<model::CustomModel>("cube.obj");
-			AddFingerprintReplacement(spinfusorDiscFingerprint2Identifer.m_Mode,
-									  spinfusorDiscFingerprint2Identifer.m_Count,
-									  spinfusorDiscFingerprint2Replacement);
+			//spinfusorDiscFingerprint2Replacement.m_CustomModel = std::make_shared<model::CustomModel>("cube.obj");
+			AddFingerprintReplacement(spinfusorDiscFingerprint2Replacement);
+
+			//auto chaingunFingerprintReplacement = FingerprintReplacement{};
+			//auto& chaingunFingerprintReplacementIdentifer = spinfusorDiscFingerprint2Replacement.m_FingerprintIdentifier;
+			//chaingunFingerprintReplacementIdentifer.m_IdentifierName = string{ "Chaingun" };
+			//chaingunFingerprintReplacementIdentifer.m_Mode = 4;
+			//chaingunFingerprintReplacementIdentifer.m_Count = -1;
+			//chaingunFingerprintReplacementIdentifer.m_IndexUV = { {0, {0.549891, 0.375469}} };
+			////spinfusorDiscFingerprint2Replacement.m_CustomModel = std::make_shared<model::CustomModel>("cube.obj");
+			//AddFingerprintReplacement(spinfusorDiscFingerprint2Identifer.m_Mode,
+			//						  spinfusorDiscFingerprint2Identifer.m_Count,
+			//						  spinfusorDiscFingerprint2Replacement);
+		
+			
+			auto chaingunFingerprintPiece1Replacement = std::make_shared<FingerprintReplacement>();
+																			/*FingerprintReplacement{ {"Chaingun piece 1",
+																			4,
+																			18 * 0 - 1,
+																			{},
+																			{{0, {0.579140, 0.787832}}}},
+																			nullptr};*/
+			chaingunFingerprintPiece1Replacement->m_FingerprintIdentifier = FingerprintIdentifier{ "Chaingun piece 1",
+																			4,
+																			18 * 0 - 1,
+																			{},
+																			{{0, {0.579140, 0.787832} }} };
+			AddFingerprintReplacement(chaingunFingerprintPiece1Replacement);
+
+			auto chaingunFingerprintPiece2Replacement = std::make_shared<FingerprintReplacement>();
+			chaingunFingerprintPiece2Replacement->m_FingerprintIdentifier = FingerprintIdentifier{ "Chaingun piece 2",
+																			4,
+																			42 * 0 - 1,
+																			{},
+																			{{0, {0.831307, 0.565450}}} };
+			AddFingerprintReplacement(chaingunFingerprintPiece2Replacement);
+
+			auto chaingunFingerprintBarrelReplacement = std::make_shared<FingerprintReplacement>();
+			chaingunFingerprintBarrelReplacement->m_FingerprintIdentifier = FingerprintIdentifier{ "Chaingun Barrel",
+																			4,
+																			84 * 0 - 1,
+																			{},
+																			{{0, {0.140749, 0.985437}}} };
+			AddFingerprintReplacement(chaingunFingerprintBarrelReplacement);
+
+			auto chaingunFingerprintPiece3Replacement = std::make_shared<FingerprintReplacement>();
+			chaingunFingerprintPiece3Replacement->m_FingerprintIdentifier = FingerprintIdentifier{ "Chaingun piece 3",
+																			4,
+																			147 * 0 - 1,
+																			{},
+																			{{0, {0.549891, 0.375469}}} };
+			//chaingunFingerprintPiece3Replacement->m_CustomModel = std::make_shared<model::CustomModel>("mp5.obj");
+			AddFingerprintReplacement(chaingunFingerprintPiece3Replacement);
+
 
 		}
 
@@ -237,7 +301,7 @@ namespace fingerprint
 			foundFingerprints.clear();
 		}*/
 
-		std::shared_ptr<model::CustomModel> CheckFingerprintFound(unsigned int mode, unsigned int count)
+		std::shared_ptr<FingerprintReplacement> CheckFingerprintFound(unsigned int mode, unsigned int count)
 		{
 			auto countToFingerprintReplacements = modeToCountToFingerprintReplacements.find(mode);
 			if (countToFingerprintReplacements != modeToCountToFingerprintReplacements.end())
@@ -249,7 +313,7 @@ namespace fingerprint
 					auto replacementFound{ false };
 					for (auto& replacement : replacements)
 					{
-						auto& fingerprintIdentifier = replacement.m_FingerprintIdentifier;
+						auto& fingerprintIdentifier = replacement->m_FingerprintIdentifier;
 						if (fingerprintIdentifier.m_Mode == mode && (fingerprintIdentifier.m_Count == count ||
 																	 count == -1))
 						{
@@ -318,7 +382,7 @@ namespace fingerprint
 							if (foundVertex && foundUV)
 							{
 								PLOG_DEBUG << "Fingerprint found: " << std::format("Mode: {0}, Count: {1}", mode, count);
-								return replacement.m_CustomModel;
+								return replacement;
 							}
 						}
 					}

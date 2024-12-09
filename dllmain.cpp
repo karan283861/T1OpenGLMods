@@ -21,6 +21,7 @@
 #include "opengl.hpp"
 
 #include "fingerprint.hpp"
+#include "model.hpp"
 
 void OnDLLProcessAttach(void)
 {
@@ -116,6 +117,7 @@ void OnDLLProcessAttach(void)
 	DetourTransactionCommit();
 
 	fingerprint::drawarrays::Initialise();
+	model::Initialise();
 }
 
 BOOL APIENTRY DllMain( HMODULE hModule,

@@ -34,16 +34,16 @@ namespace model
 		if (objPath.has_extension() && objPath.extension() == ".obj" && std::filesystem::exists(objPath))
 		{
 			auto name = objPath;
-			name = name.replace_extension(".png");
-
-			m_FileName = name.string();
-
+			m_FileName = name.filename().string();
 			LoadObj(std::filesystem::absolute(objPath).string());
 
+			name = name.replace_extension(".png");
 			auto pngPath = folderPath / "replacements" / name;
 
 			//m_Texture.LoadTexture(pngPath.string());
 			m_SucessfullyLoadedModel = true;
+
+			//customModels.push_back(std::shared_ptr<CustomModel>(customModel));
 		}
 	}
 
@@ -83,6 +83,24 @@ namespace model
 				}
 			}
 			break;
+		}
+	}
+
+	void Initialise(void)
+	{
+		static char executeablePath_[256];
+		GetModuleFileNameA(NULL, executeablePath_, 255);
+		auto executeablePath = std::filesystem::path(executeablePath_);
+		auto folderPath = executeablePath.parent_path();
+		auto replacementPath = folderPath / "replacements";
+		for (const auto& iter : std::filesystem::directory_iterator(replacementPath))
+		{
+			if (iter.path().extension() == ".obj")
+			{
+				auto objName = iter.path().filename().string();
+				//auto customModel = std::make_shared<CustomModel>(objName);
+				customModels.push_back(std::make_shared<CustomModel>(objName));
+			}
 		}
 	}
 }

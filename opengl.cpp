@@ -47,13 +47,49 @@ namespace opengl
 		{
 			ImGui::ShowDemoWindow();
 #ifdef _DEBUG
-			fingerprint::drawarrays::DrawWindow();
+			//fingerprint::drawarrays::DrawWindow();
 #endif
-			ImGui::Begin("Modelification");
-			ImGui::SliderFloat3("Scale", &scale.x, 0, 1);
-			ImGui::SliderFloat3("Translate", &translate.x, -5, 5);
-			ImGui::SliderFloat4("Rotate", &rotate.a, -360, 360);
-			ImGui::End();
+			{
+				ImGui::Begin("Fingerprint replacements");
+				static char* customModelNames[256];
+				for (int i = 0; i < model::customModels.size(); i++)
+				{
+					const auto& customModel = model::customModels[i];
+					customModelNames[i] = (char*)customModel->m_FileName.c_str();
+				}
+
+				for (const auto& fingerprintReplacement : fingerprint::drawarrays::fingerprintReplacements)
+				{
+					int customModelIndex = -1;
+
+					//ImGui::CollapsingHeader(fingerprintReplacement->m_FingerprintIdentifier.m_IdentifierName.c_str());
+					if (ImGui::CollapsingHeader(fingerprintReplacement->m_FingerprintIdentifier.m_IdentifierName.c_str()))
+					{
+						if (ImGui::Combo(std::string{ "CustomModel" }.
+										 append("##").append(fingerprintReplacement->m_FingerprintIdentifier.m_IdentifierName)
+										 .c_str(),
+										 &customModelIndex, customModelNames, model::customModels.size()))
+						{
+							fingerprintReplacement->m_CustomModel = model::customModels[customModelIndex];
+						}
+					}
+				}
+				ImGui::End();
+			}
+
+			{
+				ImGui::Begin("Custom models");
+				for (const auto& customModel : model::customModels)
+				{
+					if (ImGui::CollapsingHeader(customModel->m_FileName.c_str()))
+					{
+						ImGui::SliderFloat3("Scale", &customModel->m_Scale.x, -10, 10);
+						ImGui::SliderFloat3("Translate", &customModel->m_Translate.x, -10, 10);
+						ImGui::SliderFloat3("Rotate", &customModel->m_Rotate.a, -360, 360);
+					}
+				}
+				ImGui::End();
+			}
 		}
 
 #ifdef _DEBUG
@@ -115,35 +151,47 @@ namespace opengl
 
 		if (foundFingerprint)
 		{
-			auto& customModel = *foundFingerprint.get();
-
-			if (customModel.m_SucessfullyLoadedModel)
+			auto customModel = foundFingerprint->m_CustomModel.get();
+			if (!customModel)
 			{
-				originalGlEnableClientState(GL_VERTEX_ARRAY);
-				originalGlVertexPointer(3, GL_FLOAT, VERTEX_POINTER_STRIDE, customModel.m_Vertices->data());
-				originalGlEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				originalGlTexCoordPointer(2, GL_FLOAT, 0, customModel.m_UVs->data());
-				originalGlEnableClientState(GL_NORMAL_ARRAY);
-				originalGlNormalPointer(GL_FLOAT, 0, customModel.m_Normals->data());
-
-				originalGlScalef(scale.x, scale.y, scale.z);
-				originalGlTranslatef(translate.x, translate.y, translate.z);
-				originalGlRotatef(rotate.a, rotate.b, rotate.c, rotate.d);
-
-				originalGlEnable(GL_TEXTURE_2D);
-				originalGlTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-				
-				originalGlBindTexture(GL_TEXTURE_2D, customModel.m_Texture.m_TextureName);
-				originalGlTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				originalGlTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-				originalGlDrawArrays(mode, 0, customModel.m_IndexCount);
-				
-				originalGlBindTexture(GL_TEXTURE_2D, 0);
-				originalGlTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
 				return;
 			}
+			else
+			{
+				if (customModel->m_SucessfullyLoadedModel)
+				{
+					originalGlEnableClientState(GL_VERTEX_ARRAY);
+					originalGlVertexPointer(3, GL_FLOAT, VERTEX_POINTER_STRIDE, customModel->m_Vertices->data());
+					originalGlEnableClientState(GL_TEXTURE_COORD_ARRAY);
+					originalGlTexCoordPointer(2, GL_FLOAT, 0, customModel->m_UVs->data());
+					originalGlEnableClientState(GL_NORMAL_ARRAY);
+					originalGlNormalPointer(GL_FLOAT, 0, customModel->m_Normals->data());
+					/*originalGlDisableClientState(GL_NORMAL_ARRAY);
+					originalGlNormalPointer(GL_FLOAT, 0, nullptr);*/
+
+					originalGlScalef(customModel->m_Scale.x, customModel->m_Scale.y, customModel->m_Scale.z);
+					originalGlTranslatef(customModel->m_Translate.x, customModel->m_Translate.y,
+										 customModel->m_Translate.z);
+					originalGlRotatef(customModel->m_Rotate.a, customModel->m_Rotate.b,
+									  customModel->m_Rotate.c, customModel->m_Rotate.d);
+
+					originalGlEnable(GL_TEXTURE_2D);
+					originalGlTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+					originalGlBindTexture(GL_TEXTURE_2D, customModel->m_Texture.m_TextureName);
+					originalGlTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+					originalGlTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+					originalGlDrawArrays(mode, 0, customModel->m_IndexCount);
+
+					originalGlBindTexture(GL_TEXTURE_2D, 0);
+					originalGlTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+					return;
+				}
+			}
+
+			
 		}
 
 		if (drawOriginal)

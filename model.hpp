@@ -44,9 +44,9 @@ namespace model
 		std::shared_ptr<std::vector<float>> m_Vertices;
 		std::shared_ptr<std::vector<float>> m_UVs;
 		std::shared_ptr<std::vector<float>> m_Normals;
-		Scale m_Scale{ 0.418, 0.418, 0.418 };
-		Rotate m_Rotate{ 71.25, 47.917, 2.083, -2.083 };
-		Translate m_Translate = { 2.7, -1.146, -4.271 };
+		Scale m_Scale{ 0.1, 0.1, 0.1 };
+		Rotate m_Rotate{ 81.818, 1, 0, 0 };
+		Translate m_Translate = { 0, 3.485,0 };
 		bool m_SucessfullyLoadedModel{ false };
 		Texture m_Texture;
 		std::string m_FileName;
@@ -57,4 +57,6 @@ namespace model
 	};
 
 	extern std::vector<std::shared_ptr<CustomModel>> customModels;
+
+	void Initialise(void);
 }

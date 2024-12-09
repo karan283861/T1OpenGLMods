@@ -83,7 +83,7 @@ namespace fingerprint
 			std::string m_IdentifierName{};
 			unsigned int m_Mode{ 0 };
 			//unsigned int m_First{ 0 };
-			unsigned int m_Count{ 0 };
+			int m_Count{ 0 };
 			// if vertex array enabled
 			std::vector<std::pair<unsigned int, Vertex>> m_IndexVertex;
 			// if texture coord array enabled
@@ -96,18 +96,24 @@ namespace fingerprint
 		{
 		public:
 			FingerprintIdentifier m_FingerprintIdentifier;
-			std::shared_ptr<model::CustomModel> m_CustomModel;
+			std::shared_ptr<model::CustomModel> m_CustomModel{ nullptr };
+
+			FingerprintReplacement(void);
 		};
 
 		extern std::vector<Fingerprint> foundFingerprints;
-		extern std::unordered_map<unsigned int, std::unordered_map<unsigned int, std::vector<FingerprintReplacement>>> modeToCountToFingerprintReplacements;
+		extern std::unordered_map<unsigned int, std::unordered_map<unsigned int, std::vector<std::shared_ptr<FingerprintReplacement>>>> modeToCountToFingerprintReplacements;
+		extern std::vector<std::shared_ptr<FingerprintReplacement>> fingerprintReplacements;
 
 		//extern fingerprint::NormalData latestNormalData;
 
 		void DrawWindow(void);
-		void AddFingerprintReplacement(unsigned int mode, unsigned int count, FingerprintReplacement& fingerprintReplacement);
+		/*void AddFingerprintReplacement(unsigned int mode, unsigned int count, FingerprintReplacement& fingerprintReplacement);
+		void AddFingerprintReplacement(FingerprintReplacement& fingerprintReplacement);
+		*/
+		void AddFingerprintReplacement(std::shared_ptr<FingerprintReplacement> fingerprintReplacement);
 		void Initialise(void);
-		std::shared_ptr<model::CustomModel> CheckFingerprintFound(unsigned int mode, unsigned int count);
+		std::shared_ptr<FingerprintReplacement> CheckFingerprintFound(unsigned int mode, unsigned int count);
 		//void reset(void);
 	}
 }
