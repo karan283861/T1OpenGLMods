@@ -52,16 +52,19 @@ namespace opengl
 			{
 				ImGui::Begin("Fingerprint replacements");
 				static char* customModelNames[256];
+				//static int customModelIndexs[256]{ -1 };
+				static std::vector<int> customModelIndexs(256, -1);
 				for (int i = 0; i < model::customModels.size(); i++)
 				{
 					const auto& customModel = model::customModels[i];
 					customModelNames[i] = (char*)customModel->m_FileName.c_str();
 				}
 
-				for (const auto& fingerprintReplacement : fingerprint::drawarrays::fingerprintReplacements)
+				// const auto& fingerprintReplacement : fingerprint::drawarrays::fingerprintReplacements
+				for (int i = 0; i < fingerprint::drawarrays::fingerprintReplacements.size(); i++)
 				{
-					int customModelIndex = -1;
-
+					int& customModelIndex = customModelIndexs[i];
+					auto& fingerprintReplacement = fingerprint::drawarrays::fingerprintReplacements[i];
 					//ImGui::CollapsingHeader(fingerprintReplacement->m_FingerprintIdentifier.m_IdentifierName.c_str());
 					if (ImGui::CollapsingHeader(fingerprintReplacement->m_FingerprintIdentifier.m_IdentifierName.c_str()))
 					{
@@ -83,9 +86,12 @@ namespace opengl
 				{
 					if (ImGui::CollapsingHeader(customModel->m_FileName.c_str()))
 					{
-						ImGui::SliderFloat3("Scale", &customModel->m_Scale.x, -10, 10);
-						ImGui::SliderFloat3("Translate", &customModel->m_Translate.x, -10, 10);
-						ImGui::SliderFloat3("Rotate", &customModel->m_Rotate.a, -360, 360);
+						ImGui::SliderFloat3(std::string{ "Scale" }.append("##").append(customModel->m_FileName).c_str(),
+											&customModel->m_Scale.x, -10, 10);
+						ImGui::SliderFloat3(std::string{ "Translate" }.append("##").append(customModel->m_FileName).c_str(),
+											&customModel->m_Translate.x, -10, 10);
+						ImGui::SliderFloat4(std::string{ "Rotate" }.append("##").append(customModel->m_FileName).c_str(),
+											&customModel->m_Rotate.a, -360, 360);
 					}
 				}
 				ImGui::End();
@@ -154,7 +160,7 @@ namespace opengl
 			auto customModel = foundFingerprint->m_CustomModel.get();
 			if (!customModel)
 			{
-				return;
+				return originalGlDrawArrays(mode, first, count);
 			}
 			else
 			{
