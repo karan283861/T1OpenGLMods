@@ -50,7 +50,7 @@ void OnDLLProcessAttach(void)
 	DetourTransactionBegin();
 	DetourUpdateThread(GetCurrentThread());
 
-	auto moduleUser32 = GetModuleHandle(L"User32.dll");
+	auto moduleUser32 = GetModuleHandle("User32.dll");
 	if (moduleUser32)
 	{
 		PLOG_INFO << "Successfully found User32.dll module";
@@ -66,7 +66,7 @@ void OnDLLProcessAttach(void)
 		PLOG_ERROR << "Failed to find User32.dll module";
 	}
 
-	auto moduleOpenGL32 = GetModuleHandle(L"opengl32.dll");
+	auto moduleOpenGL32 = GetModuleHandle("opengl32.dll");
 
 	if (moduleOpenGL32)
 	{

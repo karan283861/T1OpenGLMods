@@ -45,7 +45,7 @@ namespace opengl
 
 		if (opengl::showImGuiMenu)
 		{
-			ImGui::ShowDemoWindow();
+			//ImGui::ShowDemoWindow();
 #ifdef _DEBUG
 			//fingerprint::drawarrays::DrawWindow();
 #endif

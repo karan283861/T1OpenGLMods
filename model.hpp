@@ -45,8 +45,8 @@ namespace model
 		std::shared_ptr<std::vector<float>> m_UVs;
 		std::shared_ptr<std::vector<float>> m_Normals;
 		Scale m_Scale{ 0.1, 0.1, 0.1 };
-		Rotate m_Rotate{ 81.818, 1, 0, 0 };
-		Translate m_Translate = { 0, 3.485,0 };
+		Rotate m_Rotate{ -3.896, 1, 0, 0 };
+		Translate m_Translate = { 0, 0.476,0 };
 		bool m_SucessfullyLoadedModel{ false };
 		Texture m_Texture;
 		std::string m_FileName;

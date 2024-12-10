@@ -14,7 +14,14 @@ namespace model
 		opengl::originalGlGenTextures(1, &m_TextureName);
 		m_ImageData = stbi_load(name.c_str(), &m_X, &m_Y, &m_Channels, 0);
 		opengl::originalGlBindTexture(GL_TEXTURE_2D, m_TextureName);
-		opengl::originalGlTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_X, m_Y, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_ImageData);
+		if (m_Channels == 4)
+		{
+			opengl::originalGlTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_X, m_Y, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_ImageData);
+		}
+		else
+		{
+			opengl::originalGlTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_X, m_Y, 0, GL_RGB, GL_UNSIGNED_BYTE, m_ImageData);
+		}
 
 	}
 
