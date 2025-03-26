@@ -43,33 +43,12 @@
     <ClCompile Include="user32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="customs.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="draw.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="fingerprint.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="opengl.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="user32.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="draw.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="fingerprint.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="model.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

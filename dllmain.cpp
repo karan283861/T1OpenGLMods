@@ -20,9 +20,6 @@
 #include "user32.hpp"
 #include "opengl.hpp"
 
-#include "fingerprint.hpp"
-#include "model.hpp"
-
 void OnDLLProcessAttach(void)
 {
 	auto base_address = reinterpret_cast<unsigned int>(GetModuleHandle(0));
@@ -77,37 +74,6 @@ void OnDLLProcessAttach(void)
 
 		opengl::originalWglMakeCurrent = reinterpret_cast<opengl::wglMakeCurrent>(GetProcAddress(moduleOpenGL32, "wglMakeCurrent"));
 		DetourAttach(&(PVOID&)opengl::originalWglMakeCurrent, opengl::wglMakeCurrentHook);
-
-		opengl::originalGlDrawArrays = reinterpret_cast<opengl::glDrawArrays>(GetProcAddress(moduleOpenGL32, "glDrawArrays"));
-		DetourAttach(&(PVOID&)opengl::originalGlDrawArrays, opengl::glDrawArraysHook);
-
-		opengl::originalGlEnableClientState = reinterpret_cast<opengl::glEnableClientState>(GetProcAddress(moduleOpenGL32, "glEnableClientState"));
-		DetourAttach(&(PVOID&)opengl::originalGlEnableClientState, opengl::glEnableClientStateHook);
-
-		opengl::originalGlDisableClientState = reinterpret_cast<opengl::glDisableClientState>(GetProcAddress(moduleOpenGL32, "glDisableClientState"));
-		DetourAttach(&(PVOID&)opengl::originalGlDisableClientState, opengl::glDisableClientStateHook);
-
-		opengl::originalGlVertexPointer = reinterpret_cast<opengl::glVertexPointer>(GetProcAddress(moduleOpenGL32, "glVertexPointer"));
-		DetourAttach(&(PVOID&)opengl::originalGlVertexPointer, opengl::glVertexPointerHook);
-
-		opengl::originalGlTexCoordPointer = reinterpret_cast<opengl::glTexCoordPointer>(GetProcAddress(moduleOpenGL32, "glTexCoordPointer"));
-		DetourAttach(&(PVOID&)opengl::originalGlTexCoordPointer, opengl::glTexCoordPointerHook);
-
-		opengl::originalGlNormalPointer = reinterpret_cast<opengl::glNormalPointer>(GetProcAddress(moduleOpenGL32, "glNormalPointer"));
-		DetourAttach(&(PVOID&)opengl::originalGlNormalPointer, opengl::glNormalPointerHook);
-
-		opengl::originalGlRotatef = reinterpret_cast<opengl::glRotatef>(GetProcAddress(moduleOpenGL32, "glRotatef"));
-		opengl::originalGlTranslatef = reinterpret_cast<opengl::glTranslatef>(GetProcAddress(moduleOpenGL32, "glTranslatef"));
-		opengl::originalGlScalef = reinterpret_cast<opengl::glScalef>(GetProcAddress(moduleOpenGL32, "glScalef"));
-
-		opengl::originalGlGenTextures = reinterpret_cast<opengl::glGenTextures>(GetProcAddress(moduleOpenGL32, "glGenTextures"));
-		opengl::originalGlBindTexture = reinterpret_cast<opengl::glBindTexture>(GetProcAddress(moduleOpenGL32, "glBindTexture"));
-		DetourAttach(&(PVOID&)opengl::originalGlBindTexture, opengl::glBindTextureHook);
-		opengl::originalGlTexImage2D = reinterpret_cast<opengl::glTexImage2D>(GetProcAddress(moduleOpenGL32, "glTexImage2D"));
-
-		opengl::originalGlTexParameteri = reinterpret_cast<opengl::glTexParameteri>(GetProcAddress(moduleOpenGL32, "glTexParameteri"));
-		opengl::originalGlTexEnvi = reinterpret_cast<opengl::glTexEnvi>(GetProcAddress(moduleOpenGL32, "glTexEnvi"));
-		opengl::originalGlEnable = reinterpret_cast<opengl::glEnable>(GetProcAddress(moduleOpenGL32, "glEnable"));
 	}
 	else
 	{
@@ -115,9 +81,6 @@ void OnDLLProcessAttach(void)
 	}
 
 	DetourTransactionCommit();
-
-	fingerprint::drawarrays::Initialise();
-	model::Initialise();
 }
 
 BOOL APIENTRY DllMain( HMODULE hModule,

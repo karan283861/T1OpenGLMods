@@ -145,13 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="customs.cpp" />
-    <ClCompile Include="fingerprint.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="draw.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="imgui\backends\imgui_impl_opengl2.cpp" />
     <ClCompile Include="imgui\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
@@ -159,17 +153,10 @@
     <ClCompile Include="imgui\imgui_draw.cpp" />
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
-    <ClCompile Include="model.cpp" />
     <ClCompile Include="opengl.cpp" />
     <ClCompile Include="user32.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="fingerprint.hpp" />
-    <ClInclude Include="draw.hpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="model.hpp" />
     <ClInclude Include="opengl.hpp" />
     <ClInclude Include="user32.hpp" />
   </ItemGroup>
